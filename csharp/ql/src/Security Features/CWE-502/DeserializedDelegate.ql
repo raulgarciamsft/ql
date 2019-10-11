@@ -9,11 +9,13 @@
  * @tags security
  *       external/cwe/cwe-502
  */
+
 import semmle.code.csharp.security.serialization.Deserializers
 
 from Call deserialization, Expr conversion
-where deserialization.getTarget() instanceof UnsafeDeserializer
-  and conversion = deserialization.getParent()
-  and (conversion instanceof CastExpr or conversion instanceof AsExpr)
-  and conversion.getType().(RefType).getABaseType*().hasName("Delegate")
+where
+  deserialization.getTarget() instanceof UnsafeDeserializer and
+  conversion = deserialization.getParent() and
+  (conversion instanceof CastExpr or conversion instanceof AsExpr) and
+  conversion.getType().(RefType).getABaseType*().hasName("Delegate")
 select deserialization, "Deserialization of delegate type."

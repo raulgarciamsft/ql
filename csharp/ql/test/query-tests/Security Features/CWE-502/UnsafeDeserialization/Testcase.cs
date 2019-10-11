@@ -1,4 +1,4 @@
-// semmle-extractor-options: /nostdlib /noconfig /r:${env.windir}\Microsoft.NET\Framework64\v4.0.30319\mscorlib.dll /r:${env.windir}\Microsoft.NET\Framework64\v4.0.30319\System.Web.Extensions.dll /r:${env.windir}\Microsoft.NET\Framework64\v4.0.30319\System.dll 
+// semmle-extractor-options: /r:System.Runtime.Extensions.dll /r:System.IO.Filesystem.dll
 using System.IO;
 using System.Web.Script.Serialization;
 

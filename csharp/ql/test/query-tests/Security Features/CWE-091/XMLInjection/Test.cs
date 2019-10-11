@@ -1,37 +1,35 @@
-// semmle-extractor-options: /nostdlib /noconfig /r:${env.windir}\Microsoft.NET\Framework64\v4.0.30319\mscorlib.dll  /r:${env.windir}\Microsoft.NET\Framework64\v4.0.30319\System.dll /r:${env.windir}\Microsoft.NET\Framework64\v4.0.30319\System.Web.dll /r:${env.windir}\Microsoft.NET\Framework64\v4.0.30319\System.Xml.dll
+// semmle-extractor-options: ../../../../resources/stubs/System.Web.cs /r:System.Collections.Specialized.dll /r:System.Private.Xml.dll /r:System.Runtime.Extensions.dll
 
 using System;
 using System.Security;
 using System.Web;
 using System.Xml;
 
-public class XMLInjectionHandler : IHttpHandler {
-  public void ProcessRequest(HttpContext ctx) {
-    string employeeName = ctx.Request.QueryString["employeeName"];
-
-    using (XmlWriter writer = XmlWriter.Create("employees.xml"))
+public class XMLInjectionHandler : IHttpHandler
+{
+    public void ProcessRequest(HttpContext ctx)
     {
-        writer.WriteStartDocument();
+        string employeeName = ctx.Request.QueryString["employeeName"];
 
-        // BAD: Insert user input directly into XML
-        writer.WriteRaw("<employee><name>" + employeeName + "</name></employee>");
+        using (XmlWriter writer = XmlWriter.Create("employees.xml"))
+        {
+            writer.WriteStartDocument();
 
-        // GOOD: Escape user input before inserting into string
-        writer.WriteRaw("<employee><name>" + SecurityElement.Escape(employeeName) + "</name></employee>");
+            // BAD: Insert user input directly into XML
+            writer.WriteRaw("<employee><name>" + employeeName + "</name></employee>");
 
-        // GOOD: Use standard API, which automatically encodes values
-        writer.WriteStartElement("Employee");
-        writer.WriteElementString("Name", employeeName);
-        writer.WriteEndElement();
+            // GOOD: Escape user input before inserting into string
+            writer.WriteRaw("<employee><name>" + SecurityElement.Escape(employeeName) + "</name></employee>");
 
-        writer.WriteEndElement();
-        writer.WriteEndDocument();
+            // GOOD: Use standard API, which automatically encodes values
+            writer.WriteStartElement("Employee");
+            writer.WriteElementString("Name", employeeName);
+            writer.WriteEndElement();
+
+            writer.WriteEndElement();
+            writer.WriteEndDocument();
+        }
     }
-  }
 
-  public bool IsReusable {
-    get {
-      return true;
-    }
-  }
+    public bool IsReusable => true;
 }

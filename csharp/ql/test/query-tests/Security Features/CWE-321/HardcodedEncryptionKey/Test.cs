@@ -1,4 +1,4 @@
-// semmle-extractor-options: /nostdlib /noconfig /r:${env.windir}\Microsoft.NET\Framework64\v4.0.30319\mscorlib.dll /r:${env.windir}\Microsoft.NET\Framework64\v4.0.30319\System.dll /r:${env.windir}\Microsoft.NET\Framework64\v4.0.30319\System.Core.dll 
+// semmle-extractor-options: /r:System.Security.Cryptography.Algorithms.dll /r:System.Security.Cryptography.Primitives.dll /r:System.Security.Cryptography.Csp.dll /r:System.Runtime.Extensions.dll /r:System.IO.FileSystem.dll
 using System;
 using System.IO;
 using System.Text;

@@ -1,4 +1,4 @@
-// semmle-extractor-options: /nostdlib /noconfig /r:${env.windir}\Microsoft.NET\Framework64\v4.0.30319\mscorlib.dll /r:${env.windir}\Microsoft.NET\Framework64\v4.0.30319\System.dll /r:${env.windir}\Microsoft.NET\Framework64\v4.0.30319\System.Data.dll
+// semmle-extractor-options: /r:../../../../resources/assemblies/System.Data.dll
 
 using System.Data.SqlClient;
 

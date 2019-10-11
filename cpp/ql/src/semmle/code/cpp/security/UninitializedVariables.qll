@@ -6,14 +6,14 @@ import cpp
 import InitializationFunctions
 
 // Optimised reachability predicates
+private predicate reaches(ControlFlowNode a, ControlFlowNode b) = fastTC(successor/2)(a, b)
 
-private predicate reaches(ControlFlowNode a, ControlFlowNode b) = fastTC(successor/2)(a,b)
+private predicate successor(ControlFlowNode a, ControlFlowNode b) { b = a.getASuccessor() }
 
-private predicate successor(ControlFlowNode a, ControlFlowNode b) {
-  b = a.getASuccessor()
-}
-
-private predicate hasConditionalInitialization(ConditionalInitializationFunction f, ConditionalInitializationCall call, LocalVariable v, VariableAccess initAccess, Evidence e) {
+private predicate hasConditionalInitialization(
+  ConditionalInitializationFunction f, ConditionalInitializationCall call, LocalVariable v,
+  VariableAccess initAccess, Evidence e
+) {
   // Ignore whitelisted calls
   not isWhitelistedCall(call) and
   f = getTarget(call) and
@@ -29,6 +29,7 @@ class ConditionallyInitializedVariable extends LocalVariable {
   ConditionalInitializationFunction f;
   VariableAccess initAccess;
   Evidence e;
+
   ConditionallyInitializedVariable() {
     // Find a call that conditionally initializes this variable
     hasConditionalInitialization(f, call, this, initAccess, e) and
@@ -39,7 +40,8 @@ class ConditionallyInitializedVariable extends LocalVariable {
       exists(Assignment a |
         fa = getAFieldAccess(this) and
         a.getLValue() = fa
-      ) |
+      )
+    |
       reaches(fa, initAccess)
     ) and
     // Ignore cases where the variable is assigned by a prior call to an initialization function
@@ -51,6 +53,7 @@ class ConditionallyInitializedVariable extends LocalVariable {
      * Static local variables with constant initializers do not have the initializer expr as part of
      * the CFG, but should always be considered as initialized, so exclude them.
      */
+
     not exists(getInitializer().getExpr())
   }
 
@@ -74,8 +77,11 @@ class ConditionallyInitializedVariable extends LocalVariable {
    * An access to the variable that is risky because the variable may not be initialized after the
    * `call`.
    */
-  VariableAccess getARiskyAccess(ConditionalInitializationFunction initializingFunction, ConditionalInitializationCall initializingCall, Evidence evidence) {
-    // Variable associated with this particular call 
+  VariableAccess getARiskyAccess(
+    ConditionalInitializationFunction initializingFunction,
+    ConditionalInitializationCall initializingCall, Evidence evidence
+  ) {
+    // Variable associated with this particular call
     call = initializingCall and
     initializingFunction = f and
     e = evidence and
@@ -86,9 +92,13 @@ class ConditionallyInitializedVariable extends LocalVariable {
     // And is risky because the status of the call is not checked
     (
       // Access is risky because status return code ignored completely
-      call instanceof ExprInVoidContext or
+      call instanceof ExprInVoidContext
+      or
       // Access is risky because status return code ignored completely
-      exists(LocalVariable status | call = status.getAnAssignedValue() | not exists(status.getAnAccess())) or
+      exists(LocalVariable status | call = status.getAnAssignedValue() |
+        not exists(status.getAnAccess())
+      )
+      or
       // Access is risky because the status code is not checked before the access
       exists(LocalVariable status, Assignment a |
         a.getRValue() = call and
@@ -107,9 +117,11 @@ class ConditionallyInitializedVariable extends LocalVariable {
          * If both the risky value and status code are passed to a different function, that
          * function is responsible for checking the status code.
          */
+
         not exists(Call c |
           c.getAnArgument() = result or
-          c.getAnArgument().(AddressOfExpr).getOperand() = result |
+          c.getAnArgument().(AddressOfExpr).getOperand() = result
+        |
           definitionUsePair(status, a, c.getAnArgument())
         )
       )
@@ -119,12 +131,15 @@ class ConditionallyInitializedVariable extends LocalVariable {
      * the original call. This is an attempt to eliminate results where the "status" can be checked
      * through another parameter that assigned as part of the original call.
      */
+
     not exists(Call c |
       c.getAnArgument() = result or
-      c.getAnArgument().(AddressOfExpr).getOperand() = result |
+      c.getAnArgument().(AddressOfExpr).getOperand() = result
+    |
       exists(LocalVariable lv |
         call.getAnArgument().(AddressOfExpr).getOperand() = lv.getAnAccess() and
-        not lv = this |
+        not lv = this
+      |
         c.getAnArgument() = lv.getAnAccess()
       )
     )

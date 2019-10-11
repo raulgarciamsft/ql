@@ -5,8 +5,11 @@
  * @kind problem
  * @id cs/dll-injection
  * @problem.severity error
- * @precision high
  * @tags security
+ */
+
+/*
+ * consider: @precision high
  */
 
 import csharp

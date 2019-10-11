@@ -4,10 +4,11 @@
  * @kind problem
  * @id cs/insecure-sql-connection
  * @problem.severity error
- * @precision high
  * @tags security
  *       external/cwe/cwe-327
  */
+
+// consider: @precision high
 
 import csharp
 

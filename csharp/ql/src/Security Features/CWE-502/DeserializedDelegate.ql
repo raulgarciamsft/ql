@@ -5,9 +5,12 @@
  * @kind problem
  * @id cs/deserialized-delegate
  * @problem.severity warning
- * @precision medium
  * @tags security
  *       external/cwe/cwe-502
+ */
+
+/*
+ * consider: @precision medium
  */
 
 import semmle.code.csharp.security.serialization.Deserializers
